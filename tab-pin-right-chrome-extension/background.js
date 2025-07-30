@@ -13,6 +13,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     unpinTabs(sendResponse);
     // 返回true表示异步发送响应
     return true;
+  } else if (request.action === "checkTabStatus") {
+    // 检查当前标签页是否被固定
+    checkTabStatus(sendResponse);
+    // 返回true表示异步发送响应
+    return true;
   }
 });
 
@@ -95,6 +100,21 @@ function rearrangePinnedTabs() {
         }
       });
       moveToIndex--;
+    }
+  });
+}
+
+// 检查当前标签页是否被固定
+function checkTabStatus(sendResponse) {
+  // 获取当前活动的标签页
+  chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+    if (tabs.length > 0) {
+      const currentTab = tabs[0];
+      // 检查标签页是否在固定列表中
+      const isPinned = pinnedTabIds.has(currentTab.id);
+      sendResponse({pinned: isPinned});
+    } else {
+      sendResponse({pinned: false});
     }
   });
 }

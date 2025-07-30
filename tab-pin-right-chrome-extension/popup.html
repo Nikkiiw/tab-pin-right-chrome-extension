@@ -8,36 +8,95 @@
       padding: 20px;
       font-family: Arial, sans-serif;
     }
-    button {
-      width: 100%;
-      padding: 10px;
+    
+    .switch-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+    
+    .switch-label {
       font-size: 16px;
-      background-color: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 4px;
+      font-weight: 500;
+      color: #202124;
+    }
+    
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 52px;
+      height: 28px;
+    }
+    
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    
+    .slider {
+      position: absolute;
       cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #e0e0e0;
+      transition: .4s;
+      border-radius: 34px;
     }
-    button:hover {
-      background-color: #45a049;
+    
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.2);
     }
+    
+    input:checked + .slider {
+      background-color: #1a73e8;
+    }
+    
+    input:checked + .slider:before {
+      transform: translateX(24px);
+    }
+    
     .status {
       margin-top: 10px;
       padding: 10px;
       border-radius: 4px;
       text-align: center;
     }
+    
     .success {
       background-color: #d4edda;
       color: #155724;
       border: 1px solid #c3e6cb;
     }
+    
+    .error {
+      background-color: #f8d7da;
+      color: #721c24;
+      border: 1px solid #f5c6cb;
+    }
   </style>
 </head>
 <body>
   <h2>标签页固定器</h2>
-  <button id="pinTab">固定当前标签页</button>
-  <button id="unpinTab">取消固定标签页</button>
+  <div class="switch-container">
+    <span class="switch-label">固定标签页</span>
+    <label class="switch">
+      <input type="checkbox" id="pinSwitch">
+      <span class="slider"></span>
+    </label>
+  </div>
   <div id="status" class="status" style="display: none;"></div>
   <script src="popup.js"></script>
 </body>

@@ -1,17 +1,26 @@
-// 监听固定标签页按钮点击
-document.getElementById('pinTab').addEventListener('click', function() {
-  // 调用后台脚本将当前标签页固定到右侧
-  chrome.runtime.sendMessage({action: "pinTabRight"}, function(response) {
-    showStatus(response.message, response.success ? 'success' : 'error');
+// 页面加载完成后初始化开关状态
+window.addEventListener('load', function() {
+  // 查询当前标签页是否已被固定
+  chrome.runtime.sendMessage({action: "checkTabStatus"}, function(response) {
+    if (response.pinned) {
+      document.getElementById('pinSwitch').checked = true;
+    }
   });
 });
 
-// 监听取消固定标签页按钮点击
-document.getElementById('unpinTab').addEventListener('click', function() {
-  // 调用后台脚本取消固定标签页
-  chrome.runtime.sendMessage({action: "unpinTab"}, function(response) {
-    showStatus(response.message, response.success ? 'success' : 'error');
-  });
+// 监听开关按钮状态变化
+document.getElementById('pinSwitch').addEventListener('change', function() {
+  if (this.checked) {
+    // 开关打开，固定当前标签页
+    chrome.runtime.sendMessage({action: "pinTabRight"}, function(response) {
+      showStatus(response.message, response.success ? 'success' : 'error');
+    });
+  } else {
+    // 开关关闭，取消固定标签页
+    chrome.runtime.sendMessage({action: "unpinTab"}, function(response) {
+      showStatus(response.message, response.success ? 'success' : 'error');
+    });
+  }
 });
 
 // 显示状态信息
