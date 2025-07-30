@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "标签页固定器",
+  "version": "1.0",
+  "description": "将选定的标签页固定在标签栏右侧",
+  "permissions": [
+    "tabs",
+    "activeTab"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "标签页固定器"
+  }
+}
