@@ -1,5 +1,16 @@
-// 存储固定标签页的ID
+// 存储固定标签页的ID（从存储中加载）
 let pinnedTabIds = new Set();
+
+// 当Service Worker启动时，从存储中加载固定标签页ID
+chrome.storage.local.get(['pinnedTabIds'], function(result) {
+  if (result.pinnedTabIds) {
+    pinnedTabIds = new Set(result.pinnedTabIds);
+    // 确保已固定的标签页位置正确
+    setTimeout(() => {
+      rearrangePinnedTabs();
+    }, 1000);
+  }
+});
 
 // 监听来自popup的消息
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -31,6 +42,9 @@ function pinTabToRight(sendResponse) {
       // 将标签页ID添加到固定列表
       pinnedTabIds.add(currentTab.id);
       
+      // 保存到存储
+      savePinnedTabIds();
+      
       // 查询所有标签页以确定移动位置
       chrome.tabs.query({currentWindow: true}, function(allTabs) {
         // 计算目标位置（最右侧）
@@ -41,6 +55,8 @@ function pinTabToRight(sendResponse) {
           if (chrome.runtime.lastError) {
             // 从固定列表中移除
             pinnedTabIds.delete(currentTab.id);
+            // 保存到存储
+            savePinnedTabIds();
             sendResponse({success: false, message: "移动标签页失败: " + chrome.runtime.lastError.message});
           } else {
             sendResponse({success: true, message: "标签页已固定在标签栏右侧"});
@@ -59,7 +75,19 @@ function unpinTabs(sendResponse) {
   const count = pinnedTabIds.size;
   pinnedTabIds.clear();
   
+  // 保存到存储
+  savePinnedTabIds();
+  
   sendResponse({success: true, message: `已取消固定 ${count} 个标签页`});
+}
+
+// 保存固定标签页ID到存储
+function savePinnedTabIds() {
+  chrome.storage.local.set({pinnedTabIds: Array.from(pinnedTabIds)}, function() {
+    if (chrome.runtime.lastError) {
+      console.log("保存固定标签页ID时出错: " + chrome.runtime.lastError.message);
+    }
+  });
 }
 
 // 监听标签页创建事件
@@ -86,6 +114,8 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
   // 从固定列表中移除已关闭的标签页
   if (pinnedTabIds.has(tabId)) {
     pinnedTabIds.delete(tabId);
+    // 保存到存储
+    savePinnedTabIds();
   }
 });
 
@@ -109,6 +139,9 @@ function rearrangePinnedTabs() {
     // 如果没有有效的固定标签页，直接返回
     if (pinnedTabIds.size === 0) return;
     
+    // 保存到存储
+    savePinnedTabIds();
+    
     // 计算目标位置（最右侧）
     let moveToIndex = allTabs.length - 1;
     
@@ -121,12 +154,16 @@ function rearrangePinnedTabs() {
             console.log("移动固定标签页时出错: " + chrome.runtime.lastError.message);
             // 出错时从固定列表中移除
             pinnedTabIds.delete(pinnedTabs[i].id);
+            // 保存到存储
+            savePinnedTabIds();
           }
         });
         moveToIndex--;
       } else {
         // 标签页不存在时从固定列表中移除
         pinnedTabIds.delete(pinnedTabs[i].id);
+        // 保存到存储
+        savePinnedTabIds();
       }
     }
   });
