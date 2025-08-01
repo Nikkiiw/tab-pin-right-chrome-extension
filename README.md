@@ -1,5 +1,8 @@
 # 标签页固定器 Chrome 扩展
 
+<img width="1080" height="1080" alt="2-02" src="https://github.com/user-attachments/assets/ad8c7627-1820-4a28-8fab-9f2eff86c5a0" />
+
+
 一个简单的 Chrome 扩展程序，可以将当前标签页固定在浏览器标签栏的最右侧。
 
 ## 功能特点
