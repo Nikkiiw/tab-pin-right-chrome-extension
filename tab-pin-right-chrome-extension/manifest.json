@@ -13,6 +13,18 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "标签页固定器"
+    "default_title": "标签页固定器",
+    "default_icon": {
+      "16": "icon.png",
+      "32": "icon.png",
+      "48": "icon.png",
+      "128": "icon.png"
+    }
+  },
+  "icons": {
+    "16": "icon.png",
+    "32": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
   }
 }
