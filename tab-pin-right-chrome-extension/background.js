@@ -12,6 +12,49 @@ chrome.storage.local.get(['pinnedTabIds'], function(result) {
   }
 });
 
+// 监听标签页标题变化事件
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+  // 检查标题是否发生变化
+  if (changeInfo.title) {
+    // 获取保存的监控标题
+    chrome.storage.local.get(['targetTitle'], function(result) {
+      if (result.targetTitle && tab.title.includes(result.targetTitle)) {
+        // 如果标签页标题包含监控标题且尚未固定，则自动固定
+        if (!pinnedTabIds.has(tabId)) {
+          // 将标签页ID添加到固定列表
+          pinnedTabIds.add(tabId);
+          
+          // 保存到存储
+          savePinnedTabIds();
+          
+          // 移动标签页到最右侧
+          chrome.tabs.query({currentWindow: true}, function(allTabs) {
+            const moveToIndex = allTabs.length - 1;
+            chrome.tabs.move(tabId, {index: moveToIndex}, function(movedTab) {
+              if (chrome.runtime.lastError) {
+                // 从固定列表中移除
+                pinnedTabIds.delete(tabId);
+                // 保存到存储
+                savePinnedTabIds();
+                console.log("自动固定标签页失败: " + chrome.runtime.lastError.message);
+              } else {
+                console.log("标签页 '" + tab.title + "' 已自动固定");
+              }
+            });
+          });
+        }
+      }
+    });
+  }
+  
+  // 如果标签页被固定且完成加载，确保其位置正确
+  if (pinnedTabIds.has(tabId) && changeInfo.status === 'complete') {
+    setTimeout(() => {
+      rearrangePinnedTabs();
+    }, 100);
+  }
+});
+
 // 监听来自popup的消息
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
   if (request.action === "pinTabRight") {
