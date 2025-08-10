@@ -26,6 +26,9 @@
 1. 安装扩展后，点击浏览器工具栏中的扩展图标
 2. 在弹出的窗口中：
    - 选择“固定标签页在最右侧”
+   - 在输入框中输入你想要固定的标签页标题，可以自动固定（可用于类似Homepage或者Glance之类的主页）
+<img width="445" height="427" alt="kv0xzfmo fsh" src="https://github.com/user-attachments/assets/d9bef3bf-e25a-481d-b667-824dec29f17a" />
+
 
 ## 文件说明
 
