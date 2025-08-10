@@ -18,7 +18,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
   if (changeInfo.title) {
     // 获取保存的监控标题
     chrome.storage.local.get(['targetTitle'], function(result) {
-      if (result.targetTitle && tab.title.includes(result.targetTitle)) {
+      if (result.targetTitle && tab.title === result.targetTitle) {
         // 如果标签页标题包含监控标题且尚未固定，则自动固定
         if (!pinnedTabIds.has(tabId)) {
           // 将标签页ID添加到固定列表
